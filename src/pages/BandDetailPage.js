@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import api from '../services/api';
-import Carousel from 'react-bootstrap/Carousel';
-import './BandDetailPage.css'; // Tambahkan file CSS khusus untuk BandDetailPage
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import api, { HOST } from "../services/api";
+import { Container, Row, Col, Carousel, ListGroup } from "react-bootstrap";
+import "./BandDetailPage.css";
+import Loading from "../components/Loading";
 
 const BandDetailPage = () => {
   const { id } = useParams();
@@ -12,60 +13,72 @@ const BandDetailPage = () => {
     const fetchBand = async () => {
       try {
         const response = await api.get(`/bands/${id}`);
-        setBand(response.data);
+        setBand(response.data.data);
       } catch (error) {
-        console.error('Error fetching band details', error);
+        console.error("Error fetching band details", error);
       }
     };
 
     fetchBand();
   }, [id]);
 
-  if (!band) return <div>Loading...</div>;
+  if (!band) {
+    return <div>
+        <Loading />
+    </div>;
+  }
 
   return (
-    <div className="band-detail-container">
-      <div className="band-header">
-        <h1>{band.name}</h1>
-        <p>{band.description}</p>
-      </div>
-      <Carousel className="band-carousel">
-        {band.photos.map((photo, index) => (
-          <Carousel.Item key={index}>
-            <img
-              className="d-block w-100"
-              src={photo}
-              alt={`slide-${index}`}
-            />
-          </Carousel.Item>
-        ))}
-      </Carousel>
-      <div className="band-members">
-        <h2>Members</h2>
-        <ul className="list-unstyled row">
-          {band.members.map((member, index) => (
-            <li key={index} className="col-md-4 mb-4">
-              <div className="member-card">
-                <h5>{member.name}</h5>
-                <p>{member.role}</p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="band-playlist">
-        <h2>Playlist</h2>
-        <ul className="list-unstyled">
-          {band.playlist.map((song, index) => (
-            <li key={index}>
-              <a href={song.url} target="_blank" rel="noopener noreferrer">
-                {song.song}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+    <Container>
+      <Row>
+        <Col>
+          <h1>{band.name}</h1>
+          <Row>
+            <Col>
+              <Carousel>
+                {JSON.parse(band.photoGroup).map((photo, index) => (
+                  <Carousel.Item key={index}>
+                    <img
+                      className="d-block w-100"
+                      src={HOST + photo}
+                      alt={`Slide ${index}`}
+                    />
+                  </Carousel.Item>
+                ))}
+              </Carousel>
+            </Col>
+          </Row>
+          <p>{band.description}</p>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <h2>Members</h2>
+          <ListGroup>
+            {JSON.parse(band.members).map((member, index) => (
+              <ListGroup.Item key={index}>
+                <strong>{member.name}</strong> - {member.role}
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <h2>Playlist</h2>
+          <ListGroup>
+            {JSON.parse(band.playlist).map((song, index) => (
+              <ListGroup.Item key={index}>
+                <strong>{song.song}</strong> -{" "}
+                <a href={song.url} target="_blank" rel="noopener noreferrer">
+                  Listen
+                </a>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

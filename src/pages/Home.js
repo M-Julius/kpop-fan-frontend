@@ -2,7 +2,7 @@ import React from 'react';
 import BannerSlider from '../components/BannerSlider';
 import BandList from '../components/BandList';
 import ScheduleList from '../components/ScheduleList';
-import './Home.css'; // Tambahkan file CSS khusus untuk halaman Home
+import './Home.css'; 
 
 const Home = () => {
   return (

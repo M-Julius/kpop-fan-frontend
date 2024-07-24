@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import api, { HOST } from '../services/api';
 import Carousel from 'react-bootstrap/Carousel';
+import { useNavigate } from 'react-router-dom';
 
 const BannerSlider = () => {
   const [events, setEvents] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -21,9 +23,8 @@ const BannerSlider = () => {
   return (
     <Carousel>
       {events.map(event => {
-        console.log(HOST + JSON.parse(event.photos)[0])
         return (
-        <Carousel.Item key={event.id}>
+        <Carousel.Item onClick={() => navigate(`/events/${event.id}`)} key={event.id}>
           <img
             className="d-block w-100"
             src={HOST + JSON.parse(event.photos)[0]}

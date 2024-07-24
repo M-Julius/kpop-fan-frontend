@@ -6,12 +6,22 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(config => {
-    console.log("REQUEST CONFIG",config)
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `${token}`;
   }
   return config;
+});
+
+api.interceptors.response.use(response => {
+  return response;
+}, error => {
+  if (error.response?.data?.error === 'Invalid token.') {
+    localStorage.removeItem('token');
+    window.location = '/login';
+    alert('Session expired. Please login again.');
+  }
+  return Promise.reject(error);
 });
 
 export default api;

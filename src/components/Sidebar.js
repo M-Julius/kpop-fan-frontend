@@ -1,8 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import './Sidebar.css'; // Tambahkan file CSS khusus untuk Sidebar
+import { Link, useNavigate } from 'react-router-dom';
+import './Sidebar.css'; 
+import { Button } from 'react-bootstrap';
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        navigate('/login');
+      };
   return (
     <div className="sidebar">
       <h2>CMS</h2>
@@ -18,6 +25,9 @@ const Sidebar = () => {
         </li>
         <li>
           <Link to="/cms/bands">Manage Bands</Link>
+        </li>
+        <li>
+          <Button variant="danger" onClick={handleLogout}>Logout</Button>
         </li>
       </ul>
     </div>

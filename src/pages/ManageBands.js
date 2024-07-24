@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import api, { HOST } from '../services/api';
 import Sidebar from '../components/Sidebar';
+import { Modal, Button, Form } from 'react-bootstrap';
+import Loading from '../components/Loading';
 import './CMSDashboard.css';
 
 const ManageBands = () => {
@@ -10,6 +12,10 @@ const ManageBands = () => {
   const [members, setMembers] = useState([{ name: '', role: '' }]);
   const [playlist, setPlaylist] = useState([{ song: '', url: '' }]);
   const [photos, setPhotos] = useState([]);
+  const [show, setShow] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [currentBandId, setCurrentBandId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchBands = async () => {
@@ -23,6 +29,22 @@ const ManageBands = () => {
 
     fetchBands();
   }, []);
+
+  const handleClose = () => {
+    setShow(false);
+    resetForm();
+  };
+  const handleShow = () => setShow(true);
+
+  const resetForm = () => {
+    setName('');
+    setDescription('');
+    setMembers([{ name: '', role: '' }]);
+    setPlaylist([{ song: '', url: '' }]);
+    setPhotos([]);
+    setEditing(false);
+    setCurrentBandId(null);
+  };
 
   const handleFileChange = (e) => {
     setPhotos(Array.from(e.target.files));
@@ -64,6 +86,7 @@ const ManageBands = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     const formData = new FormData();
     formData.append('name', name);
     formData.append('description', description);
@@ -74,30 +97,49 @@ const ManageBands = () => {
     });
 
     try {
-      await api.post('/bands', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      setName('');
-      setDescription('');
-      setMembers([{ name: '', role: '' }]);
-      setPlaylist([{ song: '', url: '' }]);
-      setPhotos([]);
+      if (editing) {
+        await api.put(`/bands/${currentBandId}`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      } else {
+        await api.post('/bands', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      }
+      handleClose();
       const response = await api.get('/bands');
-      setBands(response.data);
+      setBands(response.data.data);
     } catch (error) {
-      console.error('Error creating band', error);
+      console.error(`Error ${editing ? 'updating' : 'creating'} band`, error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  const handleEdit = (band) => {
+    setName(band.name);
+    setDescription(band.description);
+    setMembers(JSON.parse(band.members));
+    setPlaylist(JSON.parse(band.playlist));
+    setCurrentBandId(band.id);
+    setEditing(true);
+    handleShow();
+  };
+
   const handleDelete = async (id) => {
+    setIsLoading(true);
     try {
       await api.delete(`/bands/${id}`);
       const response = await api.get('/bands');
-      setBands(response.data);
+      setBands(response.data.data);
     } catch (error) {
       console.error('Error deleting band', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -106,108 +148,9 @@ const ManageBands = () => {
       <Sidebar />
       <div className="cms-content">
         <h2>Manage Bands</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Name</label>
-            <input
-              type="text"
-              className="form-control"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Description</label>
-            <input
-              type="text"
-              className="form-control"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Members</label>
-            {members.map((member, index) => (
-              <div key={index} className="d-flex mb-2">
-                <input
-                  type="text"
-                  className="form-control mr-2"
-                  name="name"
-                  placeholder="Name"
-                  value={member.name}
-                  onChange={(e) => handleMemberChange(index, e)}
-                  required
-                />
-                <input
-                  type="text"
-                  className="form-control mr-2"
-                  name="role"
-                  placeholder="Role"
-                  value={member.role}
-                  onChange={(e) => handleMemberChange(index, e)}
-                  required
-                />
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={() => handleRemoveMember(index)}
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-            <button type="button" className="btn btn-secondary" onClick={handleAddMember}>
-              Add Member
-            </button>
-          </div>
-          <div className="form-group">
-            <label>Playlist</label>
-            {playlist.map((song, index) => (
-              <div key={index} className="d-flex mb-2" style={{alignItems:'center', alignContent:'center', justifyContent:'center',}}>
-                <input
-                  type="text"
-                  className="form-control mr-2"
-                  name="song"
-                  placeholder="Song"
-                  value={song.song}
-                  onChange={(e) => handleSongChange(index, e)}
-                  required
-                />
-                <input
-                  type="text"
-                  className="form-control mr-2"
-                  name="url"
-                  placeholder="URL"
-                  value={song.url}
-                  onChange={(e) => handleSongChange(index, e)}
-                  required
-                />
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={() => handleRemoveSong(index)}
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-            <button type="button" className="btn btn-secondary" onClick={handleAddSong}>
-              Add Song
-            </button>
-          </div>
-          <div className="form-group">
-            <label>Photos</label>
-            <input
-              type="file"
-              className="form-control"
-              multiple
-              onChange={handleFileChange}
-            />
-          </div>
-          <button type="submit" className="btn btn-primary">Create Band</button>
-        </form>
+        <Button variant="primary" onClick={handleShow}>
+          Create Band
+        </Button>
         <ul className="list-unstyled mt-4">
           {bands.map(band => (
             <li key={band.id} className="media my-4 p-3 border rounded bg-white shadow-sm">
@@ -215,16 +158,119 @@ const ManageBands = () => {
                 <h5 className="mt-0 mb-1">{band.name}</h5>
                 <p>{band.description}</p>
                 <div className="mt-2">
-                  {/* {JSON.parse(band.photos)?.length && JSON.parse(band.photos)?.map((photo, index) => (
+                  {JSON.parse(band.photoGroup).map((photo, index) => (
                     <img key={index} src={HOST+photo} alt="Band" className="img-thumbnail mr-2" style={{ width: '100px' }} />
-                  ))} */}
+                  ))}
                 </div>
-                <button onClick={() => handleDelete(band.id)} className="btn btn-danger mt-2">Delete</button>
+                <Button variant="secondary" onClick={() => handleEdit(band)} className="mr-2">Edit</Button>
+                <Button variant="danger" onClick={() => handleDelete(band.id)}>Delete</Button>
               </div>
             </li>
           ))}
         </ul>
+
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>{editing ? 'Edit Band' : 'Create Band'}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleSubmit}>
+              <Form.Group controlId="formName">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formDescription">
+                <Form.Label>Description</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formMembers">
+                <Form.Label>Members</Form.Label>
+                {members.map((member, index) => (
+                  <div key={index} className="d-flex mb-2">
+                    <Form.Control
+                      type="text"
+                      className="mr-2"
+                      name="name"
+                      placeholder="Name"
+                      value={member.name}
+                      onChange={(e) => handleMemberChange(index, e)}
+                      required
+                    />
+                    <Form.Control
+                      type="text"
+                      className="mr-2"
+                      name="role"
+                      placeholder="Role"
+                      value={member.role}
+                      onChange={(e) => handleMemberChange(index, e)}
+                      required
+                    />
+                    <Button variant="danger" onClick={() => handleRemoveMember(index)}>
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button variant="secondary" onClick={handleAddMember}>
+                  Add Member
+                </Button>
+              </Form.Group>
+              <Form.Group controlId="formPlaylist">
+                <Form.Label>Playlist</Form.Label>
+                {playlist.map((song, index) => (
+                  <div key={index} className="d-flex mb-2">
+                    <Form.Control
+                      type="text"
+                      className="mr-2"
+                      name="song"
+                      placeholder="Song"
+                      value={song.song}
+                      onChange={(e) => handleSongChange(index, e)}
+                      required
+                    />
+                    <Form.Control
+                      type="text"
+                      className="mr-2"
+                      name="url"
+                      placeholder="URL"
+                      value={song.url}
+                      onChange={(e) => handleSongChange(index, e)}
+                      required
+                    />
+                    <Button variant="danger" onClick={() => handleRemoveSong(index)}>
+                      Remove
+                    </Button>
+                  </div>
+                ))}
+                <Button variant="secondary" onClick={handleAddSong}>
+                  Add Song
+                </Button>
+              </Form.Group>
+              <Form.Group controlId="formPhotos">
+                <Form.Label>Photos</Form.Label>
+                <Form.Control
+                  type="file"
+                  multiple
+                  onChange={handleFileChange}
+                />
+              </Form.Group>
+              <Button variant="primary" type="submit">
+                {editing ? 'Update Band' : 'Create Band'}
+              </Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
       </div>
+      {isLoading && <Loading />}
     </div>
   );
 };

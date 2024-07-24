@@ -1,6 +1,6 @@
 import React from 'react';
 import Sidebar from '../components/Sidebar';
-import './CMSDashboard.css'; // Tambahkan file CSS khusus untuk halaman CMS
+import './CMSDashboard.css'; 
 
 const CMSDashboard = () => {
   return (

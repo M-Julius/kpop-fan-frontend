@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-import './ScheduleList.css'; // Tambahkan file CSS khusus untuk ScheduleList
+import './ScheduleList.css'; 
 
 const ScheduleList = () => {
   const [schedules, setSchedules] = useState([]);

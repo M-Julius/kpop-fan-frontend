@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import api, { HOST } from '../services/api';
-import './BandList.css'; // Tambahkan file CSS khusus untuk BandList
+import './BandList.css'; 
+import { useNavigate } from 'react-router-dom';
 
 const BandList = () => {
+  const navigate = useNavigate();
   const [bands, setBands] = useState([]);
 
   useEffect(() => {
@@ -23,7 +25,7 @@ const BandList = () => {
       <h2>Bands</h2>
       <div className="grid">
         {bands.map(band => (
-          <div key={band.id} className="band-card">
+          <div key={band.id} onClick={() => navigate(`/bands/${band.id}`)} className="band-card">
             <img
               src={HOST + JSON.parse(band.photoGroup)[0]}
               alt={band.name}
