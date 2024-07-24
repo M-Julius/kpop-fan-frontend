@@ -1,0 +1,12 @@
+.schedule-list {
+    /* text-align: center; */
+}
+
+.schedule-item {
+    padding: 20px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

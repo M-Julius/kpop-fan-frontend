@@ -1,0 +1,24 @@
+.cms-dashboard {
+    display: flex;
+}
+
+.cms-content {
+    margin-left: 250px;
+    padding: 20px;
+    width: 100%;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.d-flex {
+    display: flex;
+    align-items: center;
+}
+
+.mb-2 {
+    margin-bottom: 10px;
+}
+
+.mr-2 {
+    margin-right: 10px;
+}

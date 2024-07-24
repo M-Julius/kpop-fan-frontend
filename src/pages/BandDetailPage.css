@@ -1,0 +1,57 @@
+.band-detail-container {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .band-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .band-header h1 {
+    margin-bottom: 10px;
+  }
+  
+  .band-carousel {
+    margin-bottom: 20px;
+  }
+  
+  .band-members,
+  .band-playlist {
+    margin-top: 20px;
+  }
+  
+  .band-members h2,
+  .band-playlist h2 {
+    margin-bottom: 10px;
+  }
+  
+  .member-card {
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .band-playlist ul {
+    padding: 0;
+    list-style-type: none;
+  }
+  
+  .band-playlist li {
+    margin-bottom: 10px;
+  }
+  
+  .band-playlist a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .band-playlist a:hover {
+    text-decoration: underline;
+  }
+  
