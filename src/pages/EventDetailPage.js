@@ -36,7 +36,7 @@ const EventDetailPage = () => {
           <Row>
             <Col>
               <Carousel>
-                {JSON.parse(event.photos).map((photo, index) => (
+                {event.photos.map((photo, index) => (
                   <Carousel.Item key={index}>
                     <img
                       className="d-block w-100"

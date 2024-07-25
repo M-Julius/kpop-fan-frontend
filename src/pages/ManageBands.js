@@ -123,8 +123,8 @@ const ManageBands = () => {
   const handleEdit = (band) => {
     setName(band.name);
     setDescription(band.description);
-    setMembers(JSON.parse(band.members));
-    setPlaylist(JSON.parse(band.playlist));
+    setMembers(band.members);
+    setPlaylist(band.playlist);
     setCurrentBandId(band.id);
     setEditing(true);
     handleShow();
@@ -158,7 +158,7 @@ const ManageBands = () => {
                 <h5 className="mt-0 mb-1">{band.name}</h5>
                 <p>{band.description}</p>
                 <div className="mt-2">
-                  {JSON.parse(band.photoGroup).map((photo, index) => (
+                  {band.photoGroup.map((photo, index) => (
                     <img key={index} src={HOST+photo} alt="Band" className="img-thumbnail mr-2" style={{ width: '100px' }} />
                   ))}
                 </div>

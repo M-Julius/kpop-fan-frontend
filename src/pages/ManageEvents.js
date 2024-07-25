@@ -136,7 +136,7 @@ const ManageEvents = () => {
                 <p>{event.description}</p>
                 <p>{new Date(event.date).toLocaleDateString()}</p>
                 <div className="mt-2">
-                  {JSON.parse(event.photos).map((photo, index) => (
+                  {event.photos.map((photo, index) => (
                     <img key={index} src={HOST+photo} alt="Event" className="img-thumbnail mr-2" style={{ width: '100px' }} />
                   ))}
                 </div>

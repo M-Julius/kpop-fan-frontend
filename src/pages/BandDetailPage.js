@@ -24,7 +24,7 @@ const BandDetailPage = () => {
 
   if (!band) {
     return <div>
-        <Loading />
+      <Loading />
     </div>;
   }
 
@@ -36,15 +36,17 @@ const BandDetailPage = () => {
           <Row>
             <Col>
               <Carousel>
-                {JSON.parse(band.photoGroup).map((photo, index) => (
-                  <Carousel.Item key={index}>
-                    <img
-                      className="d-block w-100"
-                      src={HOST + photo}
-                      alt={`Slide ${index}`}
-                    />
-                  </Carousel.Item>
-                ))}
+                {band.photoGroup.map((photo, index) => {
+                  return (
+                    <Carousel.Item key={index}>
+                      <img
+                        className="d-block w-100"
+                        src={HOST + photo}
+                        alt={`Slide ${index}`}
+                      />
+                    </Carousel.Item>
+                  )
+                })}
               </Carousel>
             </Col>
           </Row>
@@ -55,7 +57,7 @@ const BandDetailPage = () => {
         <Col>
           <h2>Members</h2>
           <ListGroup>
-            {JSON.parse(band.members).map((member, index) => (
+            {band.members.map((member, index) => (
               <ListGroup.Item key={index}>
                 <strong>{member.name}</strong> - {member.role}
               </ListGroup.Item>
@@ -67,7 +69,7 @@ const BandDetailPage = () => {
         <Col>
           <h2>Playlist</h2>
           <ListGroup>
-            {JSON.parse(band.playlist).map((song, index) => (
+            {band.playlist.map((song, index) => (
               <ListGroup.Item key={index}>
                 <strong>{song.song}</strong> -{" "}
                 <a href={song.url} target="_blank" rel="noopener noreferrer">

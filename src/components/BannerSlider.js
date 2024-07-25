@@ -24,18 +24,19 @@ const BannerSlider = () => {
     <Carousel>
       {events.map(event => {
         return (
-        <Carousel.Item onClick={() => navigate(`/events/${event.id}`)} key={event.id}>
-          <img
-            className="d-block w-100"
-            src={HOST + JSON.parse(event.photos)[0]}
-            alt={event.title}
-          />
-          <Carousel.Caption>
-            <h3>{event.title}</h3>
-            <p>{event.description}</p>
-          </Carousel.Caption>
-        </Carousel.Item>
-      )})}
+          <Carousel.Item onClick={() => navigate(`/events/${event.id}`)} key={event.id}>
+            {event?.photos ? <img
+              className="d-block w-100"
+              src={HOST + event.photos[0]}
+              alt={event.title}
+            /> : null}
+            <Carousel.Caption>
+              <h3>{event.title}</h3>
+              <p>{event.description}</p>
+            </Carousel.Caption>
+          </Carousel.Item>
+        )
+      })}
     </Carousel>
   );
 };

@@ -27,7 +27,7 @@ const BandList = () => {
         {bands.map(band => (
           <div key={band.id} onClick={() => navigate(`/bands/${band.id}`)} className="band-card">
             <img
-              src={HOST + JSON.parse(band.photoGroup)[0]}
+              src={HOST + band.photoGroup[0]}
               alt={band.name}
               className="band-avatar"
             />
